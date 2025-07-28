@@ -2,17 +2,15 @@ import datetime as dt
 import os
 import sys
 
-from contextlib import contextmanager, redirect_stdout
+from contextlib import contextmanager
 from pathlib import Path
-
-import ujson as json
 
 from colorama import Fore, Style
 
 
 sys.path.append(str(Path(__file__).absolute().parent))
 
-from shlex import quote,split
+from shlex import quote
 
 
 def show(

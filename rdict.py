@@ -1,7 +1,5 @@
 
 from __future__ import annotations
-import os
-import re
 import sys
 
 from collections.abc import Hashable, Mapping, Sequence
@@ -14,7 +12,7 @@ from enum import Enum
 
 from _util import show
 from convert import Convertible, convertible
-from reverse import ReverseDictItems, ReverseDictKeys, ReverseDictValues, ReverseMap
+from reverse import ReverseMap
 
 
 class _KeyType(Enum):

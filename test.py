@@ -1,9 +1,8 @@
+from _util import show
 from convert import Convertible, convertible
 from icecream import ic
 from rdict import rdict
 from reverse import ReverseDictItems, ReverseDictKeys, ReverseDictValues, ReverseMap
-
-from _util import show
 
 
 def test_rdict():
@@ -306,6 +305,7 @@ def test_convertible1():
     show(
         "TestClass instance convertible:", test_instance.convertible
     )  # Convertible([1, 2, {'a': 3}])
+    
     return True, "test_convertible1"
 
 

@@ -1,12 +1,8 @@
 from __future__ import annotations
-import datetime as dt
-import os
 import sys
 
 from pathlib import Path
 from typing import TYPE_CHECKING
-
-import ujson as json
 
 
 sys.path.append(str(Path(__file__).absolute().parent))
@@ -20,7 +16,18 @@ from collections.abc import Mapping
 from _util import show
 
 
-def _freeze(obj)-> typing.Any | int | float | str | bool | bytes | frozenset[tuple[typing.Any, typing.Any]] | tuple[typing.Any, ...]:
+def _freeze(
+    obj,
+) -> (
+    typing.Any
+    | int
+    | float
+    | str
+    | bool
+    | bytes
+    | frozenset[tuple[typing.Any, typing.Any]]
+    | tuple[typing.Any, ...]
+):
     """Recursively convert obj into a hashable representation."""
     if obj is None or isinstance(obj, (int, float, str, bool, bytes)):
         return obj
@@ -37,7 +44,7 @@ def _freeze(obj)-> typing.Any | int | float | str | bool | bytes | frozenset[tup
 
 
 class Convertible:
-    __slots__ = ('_frozen','_original')
+    __slots__ = ('_frozen', '_original')
 
     def __init__(self, original):
         self._original = original
@@ -47,12 +54,25 @@ class Convertible:
         return hash(self._frozen)
 
     def __eq__(self, other) -> typing.Any | bool:
-        if not isinstance(other, Convertible) and isinstance(other, type(self._original)):
+        if not isinstance(other, Convertible) and isinstance(
+            other, type(self._original)
+        ):
             return self._frozen == _freeze(other)
         return isinstance(other, Convertible) and self._frozen == other._frozen
 
     @property
-    def as_key(self) -> typing.Any | int | float | str | bool | bytes | frozenset[tuple[typing.Any, typing.Any]] | tuple[typing.Any, ...]:
+    def as_key(
+        self,
+    ) -> (
+        typing.Any
+        | int
+        | float
+        | str
+        | bool
+        | bytes
+        | frozenset[tuple[typing.Any, typing.Any]]
+        | tuple[typing.Any, ...]
+    ):
         return self._frozen
 
     def revert(self) -> typing.Any:
@@ -69,10 +89,8 @@ class Convertible:
         return self._frozen, self._original
 
     def __get__(self, instance, owner=None):
-        show("Convertible.__get__ called", instance, owner)
-        if instance is None:
-            return self.as_key
-        return self._original
+        return self.as_key if instance is None else self._original
+
 
 def convertible(value) -> Convertible:
     """
@@ -80,4 +98,3 @@ def convertible(value) -> Convertible:
     and able to revert back to original.
     """
     return value if isinstance(value, Convertible) else Convertible(value)
-

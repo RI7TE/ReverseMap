@@ -1,20 +1,14 @@
 from __future__ import annotations
-import os
 import sys
 
 from pathlib import Path
-from typing import TYPE_CHECKING
-
-import ujson as json
 
 
 sys.path.append(str(Path(__file__).absolute().parent))
-if TYPE_CHECKING:
-    import typing
 
-from collections import ChainMap, OrderedDict, defaultdict
-from collections.abc import Hashable, Iterable, Reversible, Sequence
-from typing import Any, Callable, NamedTuple
+from collections import ChainMap, OrderedDict
+from collections.abc import Iterable, Reversible
+from typing import Any, NamedTuple
 
 from convert import Convertible, convertible
 
@@ -39,7 +33,10 @@ class ReverseDictItem(NamedTuple):
         """
         Update the ReverseDictItem with a new ReverseMap.
         """
-        return ReverseDictItem(key=convertible(key) if not isinstance(key, Convertible) else key, value=convertible(value) if not isinstance(value, Convertible) else value)
+        return ReverseDictItem(
+            key=key if isinstance(key, Convertible) else convertible(key),
+            value=value if isinstance(value, Convertible) else convertible(value),
+        )
 class ReverseDictItems(Iterable):
     """
     An iterable class to represent items in ReverseMap.
@@ -58,8 +55,10 @@ class ReverseDictItems(Iterable):
 
     def __iter__(self):
         for key, value in self._items:
-            yield ReverseDictItem(key=convertible(key) if not isinstance(key, Convertible) else key,
-                                  value=convertible(value) if not isinstance(value, Convertible) else value)
+            yield ReverseDictItem(
+                key=key if isinstance(key, Convertible) else convertible(key),
+                value=value if isinstance(value, Convertible) else convertible(value),
+            )
 
     def __len__(self):
         return len(self._items)
@@ -188,9 +187,8 @@ class ReverseMap(dict, Reversible):
         if item is None:
             raise KeyError(f"Key {key} not found in ReverseMap.")
         print(f"item found in: {str(loc).title()} | ", "Item:", item)
-        if isinstance(item, Convertible):
-            return item.revert()
-        return item
+        return item.revert() if isinstance(item, Convertible) else item
+
     def __delitem__(self, key):
         super().__delitem__(convertible(key))
 
@@ -199,8 +197,7 @@ class ReverseMap(dict, Reversible):
         return ck in self._inverse_keys or ck in self.inverse or key in self._inverse_keys or key in self.inverse
 
     def __iter__(self):
-        keys = list(self.keys()) + list(self._inverse_keys)
-        yield from keys
+        yield from list(self.keys()) + list(self._inverse_keys)
 
     def __len__(self):
         return len(self.keys())
