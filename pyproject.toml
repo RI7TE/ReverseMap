@@ -1,0 +1,7 @@
+[project]
+name = "reversemap"
+version = "0.1.0"
+description = "A Python library providing a bidirectional dictionary implementation that allows lookups by both keys and values. ReverseMap can handle non-hashable values by automatically converting them to hashable forms while preserving the ability to revert back to original objects."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
