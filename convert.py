@@ -44,11 +44,41 @@ def _freeze(
 
 
 class Convertible:
-    __slots__ = ('_frozen', '_original')
+    __slots__ = ('_frozen', '_iterobject', '_index', '_original')
 
     def __init__(self, original):
         self._original = original
         self._frozen = _freeze(original)
+        self._index = 0
+        self._iterobject = iter((self.original, self.frozen))
+
+    @property
+    def iterobject(self):
+        """Return the iterator object."""
+        return self._iterobject
+
+    @iterobject.setter
+    def iterobject(self, value):
+        """Set the iterator object."""
+        if not isinstance(value, Iterable):
+            raise TypeError("iterobject must be an iterable.")
+        self._iterobject = iter(value)
+        self._index = 0
+
+    @property
+    def original(self):
+        """Return the original object."""
+        return self._original
+
+    @property
+    def frozen(self):
+        """Return the frozen representation."""
+        return self._frozen
+
+    @property
+    def total(self) -> int:
+        """Return the total number of items in the frozen representation."""
+        return len(self._frozen)
 
     def __hash__(self) -> int:
         return hash(self._frozen)
@@ -59,6 +89,42 @@ class Convertible:
         ):
             return self._frozen == _freeze(other)
         return isinstance(other, Convertible) and self._frozen == other._frozen
+
+    def __iter__(self) -> typing.Generator[list[typing.Any], None, None]:
+        return self
+
+    @property
+    def index(self) -> int:
+        """Return the current index in the frozen representation."""
+        return self._index
+
+    @index.setter
+    def index(self, value: int):
+        """Set the current index in the frozen representation."""
+        if value < 0 or value >= self.total:
+            raise IndexError("Index out of range.")
+        self._index = value
+
+    def __next__(self):
+        """Return the next item in the frozen representation."""
+        if self._index >= self.total - 1:
+            raise StopIteration
+        while True:
+            try:
+                self._index += 1
+                next_obj = next(self._iterobject)
+                show(f"Next object: {next_obj!r}")
+                if isinstance(next_obj, Convertible):
+                    show(f"Next object is Convertible: {next_obj!r}")
+                    next_obj = next_obj.revert()
+                    show(f"Next object reverted: {next_obj!r}")
+                return next_obj
+            except StopIteration:
+                self._index = 0
+                raise StopIteration("No more items in the iterator.")
+
+    def __len__(self) -> int:
+        return len(self._frozen)
 
     @property
     def as_key(

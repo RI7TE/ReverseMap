@@ -8,7 +8,7 @@ setuptools.setup(
     author_email="sk@perfectatrifecta.com",
     description="ReverseMap is a specialized Python dictionary that enables bidirectional lookups - you can search using either keys or values with the in operator. It handles non-hashable objects by automatically converting them to hashable representations while maintaining the ability to revert back to the original objects.",
     download_url="https://github.com/RI7TE/ReverseMap.git",
-    py_modules=["convert", "main", "rdict", "reverse", "test"],
+    py_modules=["convert", "rdict", "reverse", "test"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
