@@ -13,7 +13,7 @@ import pickle
 
 from collections.abc import Mapping
 
-from _util import show
+from ReverseMap._util import show
 
 
 def _freeze(
@@ -44,7 +44,7 @@ def _freeze(
 
 
 class Convertible:
-    __slots__ = ('_frozen', '_iterobject', '_index', '_original')
+    __slots__ = ('_frozen', '_index', '_iterobject', '_original')
 
     def __init__(self, original):
         self._original = original
@@ -78,7 +78,7 @@ class Convertible:
     @property
     def total(self) -> int:
         """Return the total number of items in the frozen representation."""
-        return len(self._frozen)
+        return len(self.original)
 
     def __hash__(self) -> int:
         return hash(self._frozen)
@@ -124,7 +124,7 @@ class Convertible:
                 raise StopIteration("No more items in the iterator.")
 
     def __len__(self) -> int:
-        return len(self._frozen)
+        return len(self._original)
 
     @property
     def as_key(
@@ -154,8 +154,9 @@ class Convertible:
     def __getstate__(self):
         return self._frozen, self._original
 
-    def __get__(self, instance, owner=None):
-        return self.as_key if instance is None else self._original
+    # def __get__(self, instance, owner=None):
+    #    show(f"Instance - {instance} - Getting Convertible value: {self._original!r}")
+    #    return self.as_key if instance is None else self._original
 
 
 def convertible(value) -> Convertible:
